@@ -5,12 +5,10 @@
 #include <chrono>
 #include <algorithm>
 
-
 #include <set>
 #include <map>
 #include <stack>
 #include <queue>
-
 
 using namespace std;
 
@@ -40,41 +38,27 @@ void findUrls(string line, vector<string> &urlList){
     }
 }
 
-int main(){
-    //setlocale(LC_ALL,"Lithuanian");
+void addWordsToWordsList(string line, map<string, set<int>> &wordsList, int lineNr){
+    stringstream ss(line);
+    string word;
 
-    ifstream file("duomLT.txt");
+    while(ss >> word){
+        auto match = wordsList.find(word);
+
+        if(match == wordsList.end()){
+            //Do this if word doesn't exist in wordsList
+            set<int> emptySet;
+            emptySet.insert(lineNr);
+            wordsList.insert(pair <string, set<int>> (word, emptySet));
+        }
+        else match->second.insert(lineNr);
+    }
+}
+
+void printUrlAndWordsList(vector<string> urlList, map<string, set<int>> wordsList){
     ofstream out("output.txt");
 
-    map<string, set<int>> wordsList;
-    vector<string> urlList;
-
-    chrono::steady_clock sc;
-    auto start = sc.now(); // Start timer
-    cout << "Programa pradeta" << endl;
-    
-    string line;
-    int lineNr = 1;
-    while(getline(file, line)){
-        findUrls(line, urlList);
-
-        removeUnnecessaryElements(line);
-        stringstream ss(line);
-
-        string word;
-        while(ss >> word){
-            auto match = wordsList.find(word);
-            if(match == wordsList.end()){
-                set<int> emptySet;
-                emptySet.insert(lineNr);
-                wordsList.insert(pair <string, set<int>> (word, emptySet));
-            }
-            else match->second.insert(lineNr);
-        }
-        lineNr++;
-    }
-
-    //Printing all url addresses
+    // Printing all url addresses
     if(urlList.size() >= 1){
         out << "Url's:" << endl;
         for(int i=0; i<urlList.size(); i++){
@@ -83,7 +67,7 @@ int main(){
         out << "---------------------------------------------------" << endl;
     }
     
-
+    // Printing repetitive words from wordsList
     for(auto it = wordsList.begin(); it != wordsList.end(); it++){
         if(it->second.size() > 1) {
             out << "'" << it->first << "' pasikartoja " << it->second.size() << " kartus, eilutese: ";
@@ -94,8 +78,61 @@ int main(){
         }
         
     }
+}
 
-    auto end = sc.now();       // end timer
+string getFileName(){
+    string fileName;
+
+    while(true){
+        try
+        {
+            cout << "Iveskite failo pavadinima (pvz: duomLT.txt): ";
+            cin >> fileName;
+
+            // Try opening file, if failed, throw an exception
+            ifstream in(fileName);
+            if(in.fail()) throw 1;
+            
+            return fileName;
+        }
+        catch(int errorID)
+        {
+            cout << "Failas pavadinimu '" << fileName << "' buvo nerastas, arba jo atidaryti nepavyko" << endl;
+        }
+    }
+    
+    return fileName;
+}
+
+int main(){
+    ifstream file(getFileName());
+
+    // Start timer
+    chrono::steady_clock sc;
+    auto start = sc.now();
+    cout << "Programa pradeta" << endl;
+    
+    // Variable initialisation
+    map<string, set<int>> wordsList;
+    vector<string> urlList;
+    string line;
+    int lineNr = 1;
+
+    // Perform actions with every line of text from text file
+    while(getline(file, line)){
+        findUrls(line, urlList);
+
+        removeUnnecessaryElements(line);
+
+        addWordsToWordsList(line, wordsList, lineNr);
+        
+        lineNr++;
+    }
+
+    printUrlAndWordsList(urlList, wordsList);
+
+    // End timer
+    auto end = sc.now();
     auto time_span = static_cast<chrono::duration<double>>(end - start);   // measure time span between start & end
     cout<<"Programos veikimo laikas: "<<time_span.count()<<"s";
 
