@@ -29,12 +29,12 @@ void findUrls(string line, vector<string> &urlList){
     stringstream ss(line);
     string word;
 
-    const regex pattern("((http|https)://)(www.)?[a-zA-Z0-9@:%._\\+~#?&//=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)");
-    const regex pattern2("(^www\\.[a-zA-Z0-9]+\\.[a-zA-Z0-9]+)");
+    //const regex pattern("((http|https)://)(www.)?[a-zA-Z0-9@:%._\\+~#?&//=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)");
+    //const regex pattern2("(^www\\.[a-zA-Z0-9]+\\.[a-zA-Z0-9]+)");
+    const regex pattern("(((http|https)://)?www\\.)?[a-zA-Z0-9@:%._\\+~#?&//=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)");
 
     while(ss >> word){
         if(regex_match(word, pattern)) urlList.push_back(word);
-        if(regex_match(word, pattern2)) urlList.push_back(word);
     }
 }
 
