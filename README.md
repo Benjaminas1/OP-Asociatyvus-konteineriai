@@ -43,3 +43,7 @@ Paleidus programą paprašoma įvesti duomenų failo pavadinimą, o įvedus atli
     'dėl' pasikartoja 4 kartus, eilutese: 5 11 14 20 
     'erdvę' pasikartoja 2 kartus, eilutese: 11 17 
     'esu' pasikartoja 2 kartus, eilutese: 8 25 
+
+# Programos kompiliavimas ir paleidimas
+    g++ main.cpp -o main
+    main
